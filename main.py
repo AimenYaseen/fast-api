@@ -1,6 +1,7 @@
 from enum import Enum
+from typing import Annotated
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 
 from schemas import Item
 
@@ -17,7 +18,21 @@ def health_check():
 def read_item(
         item_id: int,  # path parameter with its type
         needy: bool,  # required query parameter
-        q: str | None = None,  # optional query Parameter
+        # additional validations
+        # it will only validate when the value of q is given
+        q: Annotated[
+            str | None,
+            Query(
+                title="Query String",
+                description="Query String description that will be shown in OpenAI as metadata",
+                min_length=3,
+                max_length=50,
+                alias="item-query",  # this will be used in url to provide value for query parameter
+                # pattern="^fixedquery$", => regex
+                deprecated=True,
+                # include_in_schema=False => it will exclude this parameter from OpenAI schema used as hidden query
+            )
+        ] = None,  # optional query Parameter
         limit: int = 1,  # query parameter with default value
 ):
     return {
