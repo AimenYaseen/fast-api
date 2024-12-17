@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Union
 
 from fastapi import FastAPI
 
@@ -13,15 +12,19 @@ def health_check():
     return {"detail": "Working Great!"}
 
 
-# -------------- PATH PARAMETERS ---------------------
+# -------------- PATH & Query PARAMETERS ---------------------
 @app.get("/items/{item_id}")
 def read_item(
         item_id: int,  # path parameter with its type
-        q: Union[str, None] = None  # optional argument
+        needy: bool,  # required query parameter
+        q: str | None = None,  # optional query Parameter
+        limit: int = 1,  # query parameter with default value
 ):
     return {
         "item_id": item_id,
-        "q": q
+        "q": q,
+        "needy": needy,
+        "limit": limit,
     }
 
 
