@@ -47,11 +47,35 @@ async def get_model(model_name: ModelName):
 
 
 # -------------------- PYDANTIC SCHEMAS -------------------------
+@app.post("/items/")
+def create_item(item: Item):
+    """
+    Item Pydantic schema as Request Body
+
+    :param item:
+    :return: Item with price_with_tax is is_offered
+    """
+    item_dict = item.model_dump()  # item.dict() => dict is going to be deprecated
+    if item.is_offered:
+        price_with_tax = item.price + item.tax
+        item_dict.update({"price_with_tax": price_with_tax})
+    return item_dict
+
+
 @app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item):
-    return {
+def update_item(item_id: int, item: Item, q: str | None = None):
+    """
+    Request Body with Path & Query Parameters
+
+    :param item_id:
+    :param item:
+    :param q:
+    :return: Item with q (query parameter)
+    """
+    result = {
         "item_id": item_id,
-        "item_name": item.name,
-        "item_price": item.price,
-        "is_offer": item.is_offer,
+        **item.model_dump(),
     }
+    if q:
+        result.update({"q": q})
+    return result
