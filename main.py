@@ -3,7 +3,7 @@ from typing import Annotated
 
 from fastapi import FastAPI, Query, Path
 
-from schemas import Item
+from schemas import Item, FilterParams
 
 app = FastAPI()
 
@@ -11,6 +11,12 @@ app = FastAPI()
 @app.get("/")
 def health_check():
     return {"detail": "Working Great!"}
+
+
+# --------------- Query PARAMS using Pydantic ---------------------
+@app.get("/items/")
+def read_items(filter_query: Annotated[FilterParams, Query()]):
+    return filter_query
 
 
 # -------------- PATH & Query PARAMETERS ---------------------
@@ -23,8 +29,8 @@ def read_item(
             int,
             Path(
                 title="ID of the item to be fetched!",
-                ge=1, # greater than or equal to
-                lt=1000, # less than
+                ge=1,  # greater than or equal to
+                lt=1000,  # less than
             )
         ],  # path parameter with its type
         needy: bool,  # required query parameter
