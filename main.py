@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Annotated
 
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Path
 
 from schemas import Item
 
@@ -16,7 +16,17 @@ def health_check():
 # -------------- PATH & Query PARAMETERS ---------------------
 @app.get("/items/{item_id}")
 def read_item(
-        item_id: int,  # path parameter with its type
+        # without annotated
+        # item_id: int = Path(title="The ID of the item to get"),
+        # with annotated
+        item_id: Annotated[
+            int,
+            Path(
+                title="ID of the item to be fetched!",
+                ge=1, # greater than or equal to
+                lt=1000, # less than
+            )
+        ],  # path parameter with its type
         needy: bool,  # required query parameter
         # additional validations
         # it will only validate when the value of q is given
