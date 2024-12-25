@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 
 app = FastAPI()
 
@@ -7,7 +7,7 @@ app = FastAPI()
 # --------------- SCHEMAS ---------------------
 class Image(BaseModel):
     name: str
-    url: str
+    url: HttpUrl
 
 
 class Item(BaseModel):
@@ -17,6 +17,28 @@ class Item(BaseModel):
     tax: float | None = None
     tags: set[str] = set()
     image: Image | None = None
+
+
+# deeply nested model
+class Offer(BaseModel):
+    name: str
+    description: str
+    price: float
+    items: list[Item]
+
+
+"""
+We can also declare body as a list of list of schema in function arguments
+Just like lists, we can also declare dict. For example
+weights: dict[int, float]
+"""
+
+
+@app.post("/offers/")
+async def create_offer(offer: Offer, images: list[Image] = []):
+    results = {"offer": offer, "extar_images": images}
+    return results
+
 
 """
 EXAMPLE
@@ -32,6 +54,8 @@ EXAMPLE
     }
 }
 """
+
+
 @app.put("/items/{item_id}")
 async def update_item(
         item_id: int,
