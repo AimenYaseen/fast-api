@@ -78,8 +78,28 @@ async def get_model(model_name: ModelName):
 
 
 # -------------------- PYDANTIC SCHEMAS -------------------------
+"""
+If I uncomment user and importance, body will be 
+{
+    "item": {
+        "name": "Foo",
+        "description": "The pretender",
+        "price": 42.0,
+        "tax": 3.2
+    },
+    "user": {
+        "username": "dave",
+        "full_name": "Dave Grohl"
+    },
+    "importance": 5
+}
+"""
 @app.post("/items/")
-def create_item(item: Item):
+def create_item(
+        item: Item,
+        # user: User, => multiple body parameters
+        # importance: Annotated[int, Body()] => it will be outside the item and user but part of body
+):
     """
     Item Pydantic schema as Request Body
 
@@ -92,9 +112,27 @@ def create_item(item: Item):
         item_dict.update({"price_with_tax": price_with_tax})
     return item_dict
 
-
+"""
+Here item is body while q is query parameter as every single variable in update_item() is considered
+as query parameter
+If you want your body to be submitted like this of you have a single attribute schema
+{
+    "item": {
+        "name": "Foo",
+        "description": "The pretender",
+        "price": 42.0,
+        "tax": 3.2
+    }
+}
+then define it like this
+item: Annotated[Item, Body(embed=True)]
+"""
 @app.put("/items/{item_id}")
-def update_item(item_id: int, item: Item, q: str | None = None):
+def update_item(
+        item_id: int,
+        item: Item,
+        q: str | None = None
+):
     """
     Request Body with Path & Query Parameters
 
