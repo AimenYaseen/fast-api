@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Form
 from starlette.responses import HTMLResponse
 
 app = FastAPI()
@@ -28,6 +28,21 @@ async def create_upload_file(
     }
 
 
+# FILE AND FORM PARAMETERS
+
+@app.post("/form-files/")
+async def create_file(
+        file: Annotated[bytes, File()],
+        file_b: Annotated[UploadFile, File()],
+        token: Annotated[str, Form()],
+):
+    return {
+        "file_size": len(file),
+        "token": token,
+        "fileb_content_type": file_b.content_type,
+    }
+
+
 @app.get("/")
 async def main():
     content = """
@@ -36,7 +51,7 @@ async def main():
     <input name="files" type="file" multiple>
     <input type="submit">
     </form>
-    <form action="/uploadfiles/" enctype="multipart/form-data" method="post">
+    <form action="/upload-file/" enctype="multipart/form-data" method="post">
     <input name="files" type="file" multiple>
     <input type="submit">
     </form>
