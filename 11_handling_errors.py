@@ -58,7 +58,7 @@ async def validation_exception_handler(request, exc):
     # return PlainTextResponse(str(exc), status_code=400)
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content=jsonable_encoder(
+        content=jsonable_encoder( # convert dict to json compatible format
             {
                 "detail": exc.errors(),
                 "body": exc.body,
