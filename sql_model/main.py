@@ -1,5 +1,4 @@
-from sqlalchemy.orm import Session
-from sqlmodel import create_engine, SQLModel
+from sqlmodel import Session, create_engine, SQLModel, select
 
 from .models import Hero
 
@@ -35,10 +34,20 @@ def create_heroes():
     print("Hero 2:", hero_2)
     print("Hero 3:", hero_3)
 
+def select_heroes():
+    with Session(engine) as session:
+        statement = select(Hero)
+        heroes = session.exec(statement)
+        # for hero in heroes:
+        #     print(hero)
+        print(heroes.all())
+        # It can be done in a single statement
+        # heroes = session.exec(select(Hero)).all()
 
 def create_db_and_models():
-    SQLModel.metadata.create_all(engine)
-    create_heroes()
+    # SQLModel.metadata.create_all(engine)
+    # create_heroes()
+    select_heroes()
 
 
 if __name__ == "__main__":
