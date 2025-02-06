@@ -66,7 +66,7 @@ def get_hero():
     # one() => looks for exactly one object, if there is None or multiple, it will throw error
     # get() with id => return object if id matches, otherwise return None
     with Session(engine) as session:
-        obj = session.exec(select(Hero).where(Hero.id == 1)).first()
+        obj = session.exec(select(Hero).where(col(Hero.id) == 1)).first()
         print(obj)
         obj2 = session.exec(select(Hero).where(Hero.id == 2)).one()
         print(obj2)
@@ -74,12 +74,20 @@ def get_hero():
         print(obj3)
 
 
+def get_limit_offset():
+    with Session(engine) as session:
+        # skip 3 objects (offset) and get 4 objects afterwards
+        results = session.exec(select(Hero).offset(3).limit(4)).all()
+        print(results)
+
+
 def create_db_and_models():
     # SQLModel.metadata.create_all(engine)
     # create_heroes()
     # select_heroes()
     # select_where_heroes()
-    get_hero()
+    # get_hero()
+    get_limit_offset()
 
 
 if __name__ == "__main__":
