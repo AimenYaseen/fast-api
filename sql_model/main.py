@@ -81,13 +81,50 @@ def get_limit_offset():
         print(results)
 
 
+def update_hero():
+    with Session(engine) as session:
+        statement = select(Hero).where(Hero.name == "Spider-Boy")
+        results = session.exec(statement)
+        hero_1 = results.first()
+        if not hero_1:
+            return
+
+        print(hero_1)
+
+        hero_1.age = 18
+        session.add(hero_1)
+        session.commit()
+        session.refresh(hero_1)
+
+        print(hero_1)
+
+def delete_hero():
+    with Session(engine) as session:
+        statement = select(Hero).where(Hero.name == "Spider-Boy")
+        results = session.exec(statement)
+        hero_1 = results.first()
+        if not hero_1:
+            return
+
+        session.delete(hero_1)
+        session.commit()
+
+        print(hero_1)
+
+        result = session.exec(select(Hero).where(Hero.name == "Spider-Boy")).first()
+        if not result:
+            print("Hero Object Got Deleted Successfully!")
+
+
 def create_db_and_models():
     # SQLModel.metadata.create_all(engine)
     # create_heroes()
     # select_heroes()
     # select_where_heroes()
     # get_hero()
-    get_limit_offset()
+    # get_limit_offset()
+    update_hero()
+    delete_hero()
 
 
 if __name__ == "__main__":
