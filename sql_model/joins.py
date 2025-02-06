@@ -74,10 +74,34 @@ def select_heroes():
             print("Hero:", hero)
 
 
+def update_heroes():
+    with Session(engine) as session:
+        hero_spider_boy = session.exec(select(Hero).where(Hero.name == "Spider-Boy")).first()
+        if not hero_spider_boy:
+            return
+
+        team = session.exec(select(Team).where(Team.name == "Preventers")).first()
+        if not team:
+            return
+        hero_spider_boy.team_id = team.id
+        session.add(hero_spider_boy)
+        session.commit()
+        session.refresh(hero_spider_boy)
+        print(hero_spider_boy)
+
+        # ----------------- Break the Connection -------------------
+        hero_spider_boy.team_id = None
+        session.add(hero_spider_boy)
+        session.commit()
+        session.refresh(hero_spider_boy)
+        print("No longer Preventer:", hero_spider_boy)
+
+
 def main():
     # create_db_and_tables()
     # create_heroes()
-    select_heroes()
+    # select_heroes()
+    update_heroes()
 
 
 if __name__ == "__main__":
