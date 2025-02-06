@@ -1,4 +1,4 @@
-from sqlmodel import Session, create_engine, SQLModel, select, or_, col
+from sqlmodel import Session, create_engine, select, or_, col
 
 from .models import Hero
 
@@ -34,6 +34,7 @@ def create_heroes():
     print("Hero 2:", hero_2)
     print("Hero 3:", hero_3)
 
+
 def select_heroes():
     with Session(engine) as session:
         statement = select(Hero)
@@ -43,6 +44,7 @@ def select_heroes():
         print(heroes.all())
         # It can be done in a single statement
         # heroes = session.exec(select(Hero)).all()
+
 
 def select_where_heroes():
     with Session(engine) as session:
@@ -58,11 +60,26 @@ def select_where_heroes():
         # ----------- Use col to prevent editor confusion/error ---------------
         s4 = select(Hero).where(col(Hero.age) > 35)
 
+
+def get_hero():
+    # first() -> return first element in iterable otherwise return None
+    # one() => looks for exactly one object, if there is None or multiple, it will throw error
+    # get() with id => return object if id matches, otherwise return None
+    with Session(engine) as session:
+        obj = session.exec(select(Hero).where(Hero.id == 1)).first()
+        print(obj)
+        obj2 = session.exec(select(Hero).where(Hero.id == 2)).one()
+        print(obj2)
+        obj3 = session.get(Hero, 3)
+        print(obj3)
+
+
 def create_db_and_models():
     # SQLModel.metadata.create_all(engine)
     # create_heroes()
     # select_heroes()
-    select_where_heroes()
+    # select_where_heroes()
+    get_hero()
 
 
 if __name__ == "__main__":
