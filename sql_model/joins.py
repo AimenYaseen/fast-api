@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, Field, create_engine, Session
+from sqlmodel import SQLModel, Field, create_engine, Session, select
 
 
 class Team(SQLModel, table=True):
@@ -24,6 +24,7 @@ engine = create_engine(sqlite_url, echo=True)
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
+
 
 def create_heroes():
     with Session(engine) as session:
@@ -57,10 +58,27 @@ def create_heroes():
         print("Created hero:", hero_spider_boy)
 
 
+def select_heroes():
+    with Session(engine) as session:
+        # statement = select(Hero, Team).where(Hero.team_id == Team.id)
+        # statement = select(Hero, Team).join(Team, isouter=True)  # outer join
+        statement = select(Hero, Team).join(Team)  # inner join
+        results = session.exec(statement)
+        for hero, team in results:
+            print("Hero:", hero, "Team:", team)
+
+        statement = select(Hero).join(Team).where(Team.name == "Preventers")
+        results = session.exec(statement)
+        print(results)
+        for hero in results:
+            print("Hero:", hero)
+
 
 def main():
     # create_db_and_tables()
-    create_heroes()
+    # create_heroes()
+    select_heroes()
+
 
 if __name__ == "__main__":
     main()
